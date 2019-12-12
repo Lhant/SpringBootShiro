@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zqk.dao.PermsMapper" >
+
+    <resultMap id="BaseResultMap" type="com.zqk.pojo.Perms" >
+        <id column="permId" property="permid" jdbcType="INTEGER" />
+        <result column="permName" property="permname" jdbcType="VARCHAR" />
+        <result column="permString" property="permstring" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        permId, permName, permString
+    </sql>
+
+    <select id="selectPermsByName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        SELECT perms.* FROM perms,role_vs_perm,role,user_vs_role,`user` WHERE
+
+																		perms.permId=role_vs_perm.pid
+
+																        AND role_vs_perm.rid=role.roleId
+
+																        AND role.roleId=user_vs_role.rid
+
+																	    AND user_vs_role.rid=`user`.id
+
+																	    AND `user`.userName=#{value}
+
+																				GROUP BY permId
+
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select 
+        <include refid="Base_Column_List" />
+        from perms
+        where permId = #{permid,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+        delete from perms
+        where permId = #{permid,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.zqk.pojo.Perms" >
+        insert into perms (permId, permName, permString
+            )
+        values (#{permid,jdbcType=INTEGER}, #{permname,jdbcType=VARCHAR}, #{permstring,jdbcType=VARCHAR}
+            )
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.zqk.pojo.Perms" >
+        insert into perms
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="permid != null" >
+                permId,
+            </if>
+            <if test="permname != null" >
+                permName,
+            </if>
+            <if test="permstring != null" >
+                permString,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="permid != null" >
+                #{permid,jdbcType=INTEGER},
+            </if>
+            <if test="permname != null" >
+                #{permname,jdbcType=VARCHAR},
+            </if>
+            <if test="permstring != null" >
+                #{permstring,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.zqk.pojo.Perms" >
+        update perms
+        <set >
+            <if test="permname != null" >
+                permName = #{permname,jdbcType=VARCHAR},
+            </if>
+            <if test="permstring != null" >
+                permString = #{permstring,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where permId = #{permid,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.zqk.pojo.Perms" >
+        update perms
+        set permName = #{permname,jdbcType=VARCHAR},
+            permString = #{permstring,jdbcType=VARCHAR}
+        where permId = #{permid,jdbcType=INTEGER}
+    </update>
+</mapper>
